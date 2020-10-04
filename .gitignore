@@ -1,0 +1,7 @@
+/target/
+/test-output/
+*.log
+.settings/
+.idea/
+.idea
+.*iml
