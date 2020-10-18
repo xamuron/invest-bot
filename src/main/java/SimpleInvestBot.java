@@ -18,18 +18,21 @@ public class SimpleInvestBot extends TelegramLongPollingBot {
     }
 
     public void onUpdateReceived(Update update) {
+        Message inputMessage = update.getMessage();
+
         try {
             //проверяем есть ли сообщение и текстовое ли оно
             if (update.hasMessage() && update.getMessage().hasText()) {
-                Message inputMessage = update.getMessage();
-                System.out.println("User message: " + inputMessage.getText());
+                String userName = inputMessage.getFrom().getUserName();
+                System.out.println("User " + userName + " send message: " + inputMessage.getText());
+
                 if (inputMessage.getText().equals("/start")) {
                     SendMessage message = new SendMessage();
                     message
                             .setChatId(inputMessage.getChatId())
-                            .setText("Hello! It's simple invest bot\n Press the button to continue");
+                            .setText("Hello! It's simple invest bot\n Press the button to continue")
+                            .setReplyMarkup(setInlineDefaultKeyboard());
 
-                    message.setReplyMarkup(setInlineDefaultKeyboard());
                     execute(message);
                 }
             } else
@@ -39,13 +42,13 @@ public class SimpleInvestBot extends TelegramLongPollingBot {
                     String msg2 = "It's wrong button, sorry!";
 
                     String clb = update.getCallbackQuery().getData();
-
                     if (clb.equals("button_1"))
                         answerCallbackQuery(callbackId, msg1);
                     else
                         answerCallbackQuery(callbackId, msg2);
 
-                    System.out.println("Callback: " + clb);
+                    String userName = update.getCallbackQuery().getFrom().getUserName();
+                    System.out.println("Callback: " + userName + " click on " + clb);
                 }
         } catch (TelegramApiException e) {
             e.printStackTrace();
