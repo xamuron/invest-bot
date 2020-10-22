@@ -5,6 +5,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import scraping_module.exceptions.IndexNotFoundException;
 
 import java.io.IOException;
 
@@ -35,35 +36,21 @@ public class Scraper {
         return doc;
     }
 
-    //    Elements indexList = new Elements();
+    public String getPrice(Element index) {
+        if (index != null)
+            return  index.select("td[class$='last']").text();
+        else
+            return "";
+    }
 
 
 
-//    public static void main(String[] args) {
-//        Scraper scraper = new Scraper();
-//        Document doc;
-//        Elements indexList = new Elements();
-//
-//        try {
-//            doc = scraper.getDocument(MAJOR_INDICES);
-//            indexList = doc.select("tr[id^='pair_']");
-//        }
-//        catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        Element indexElement = scraper.searchIndexElementByName("ATX", indexList);
-//        String price = indexElement.select("td[class$='last']").text();
-//    }
-
-
-
-    public Element searchIndexElementByName(String indexName, Elements elements) {
-        for (Element element: elements) {
-            String name = element.select("td a").attr("title");
-            if (indexName.equals(name))
+    public Element searchIndexElementByName(String indexName) throws IndexNotFoundException {
+        for (Element element: indexList) {
+            String name = element.select("td a").text();
+            if (indexName.equalsIgnoreCase(name))
                 return element;
         }
-        return null;
+        throw new IndexNotFoundException("Selected index not found");
     }
 }

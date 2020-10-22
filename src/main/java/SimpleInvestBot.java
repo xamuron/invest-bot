@@ -1,3 +1,4 @@
+import org.jsoup.nodes.Element;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -6,6 +7,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import scraping_module.Scraper;
+import scraping_module.exceptions.IndexNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +23,9 @@ public class SimpleInvestBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         Message inputMessage = update.getMessage();
 
+        Scraper scraper = new Scraper();
+        SendMessage message = new SendMessage();
+
         try {
             //проверяем есть ли сообщение и текстовое ли оно
             if (update.hasMessage() && update.getMessage().hasText()) {
@@ -27,12 +33,27 @@ public class SimpleInvestBot extends TelegramLongPollingBot {
                 System.out.println("User " + userName + " send message: " + inputMessage.getText());
 
                 if (inputMessage.getText().equals("/start")) {
-                    SendMessage message = new SendMessage();
                     message
                             .setChatId(inputMessage.getChatId())
-                            .setText("Hello! It's simple invest bot\n Press the button to continue")
+                            .setText("Hello! It's simple invest bot\n Press the button to continue... \n " +
+                                    "... or Enter stock market index name")
                             .setReplyMarkup(setInlineDefaultKeyboard());
 
+                    execute(message);
+                }
+                else {
+                    String price;
+                    Element index;
+                    message.setChatId(inputMessage.getChatId());
+                    try {
+                        index = scraper.searchIndexElementByName(inputMessage.getText());
+                        price = scraper.getPrice(index);
+                        message.setText(inputMessage.getText() + " price: " + price + "$");
+                    }
+                    catch (IndexNotFoundException e) {
+                        message.setText("index called " + inputMessage.getText() + " is not found");
+                        e.printStackTrace();
+                    }
                     execute(message);
                 }
             } else
