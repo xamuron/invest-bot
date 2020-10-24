@@ -1,3 +1,4 @@
+import org.jsoup.nodes.Element;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -6,6 +7,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import scraping_module.Scraper;
+import scraping_module.exceptions.IndexNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,18 +21,39 @@ public class SimpleInvestBot extends TelegramLongPollingBot {
     }
 
     public void onUpdateReceived(Update update) {
+        Message inputMessage = update.getMessage();
+
+        Scraper scraper = new Scraper();
+        SendMessage message = new SendMessage();
+
         try {
             //проверяем есть ли сообщение и текстовое ли оно
             if (update.hasMessage() && update.getMessage().hasText()) {
-                Message inputMessage = update.getMessage();
-                System.out.println("User message: " + inputMessage.getText());
+                String userName = inputMessage.getFrom().getUserName();
+                System.out.println("User " + userName + " send message: " + inputMessage.getText());
+
                 if (inputMessage.getText().equals("/start")) {
-                    SendMessage message = new SendMessage();
                     message
                             .setChatId(inputMessage.getChatId())
-                            .setText("Hello! It's simple invest bot\n Press the button to continue");
+                            .setText("Hello! It's simple invest bot\n Press the button to continue... \n " +
+                                    "... or Enter stock market index name")
+                            .setReplyMarkup(setInlineDefaultKeyboard());
 
-                    message.setReplyMarkup(setInlineDefaultKeyboard());
+                    execute(message);
+                }
+                else {
+                    String price;
+                    Element index;
+                    message.setChatId(inputMessage.getChatId());
+                    try {
+                        index = scraper.searchIndexElementByName(inputMessage.getText());
+                        price = scraper.getPrice(index);
+                        message.setText(inputMessage.getText() + " price: " + price + "$");
+                    }
+                    catch (IndexNotFoundException e) {
+                        message.setText("index called " + inputMessage.getText() + " is not found");
+                        e.printStackTrace();
+                    }
                     execute(message);
                 }
             } else
@@ -39,13 +63,13 @@ public class SimpleInvestBot extends TelegramLongPollingBot {
                     String msg2 = "It's wrong button, sorry!";
 
                     String clb = update.getCallbackQuery().getData();
-
                     if (clb.equals("button_1"))
                         answerCallbackQuery(callbackId, msg1);
                     else
                         answerCallbackQuery(callbackId, msg2);
 
-                    System.out.println("Callback: " + clb);
+                    String userName = update.getCallbackQuery().getFrom().getUserName();
+                    System.out.println("Callback: " + userName + " click on " + clb);
                 }
         } catch (TelegramApiException e) {
             e.printStackTrace();
