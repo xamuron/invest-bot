@@ -79,7 +79,23 @@ public class GameManager {
 
     public boolean winCondition() {
 
-        //todo определить условия завершения игры
+        if (game.getGameField()[0][0].equals(game.getGameField()[1][1]) && game.getGameField()[0][0].equals(game.getGameField()[2][2]) && (game.getGameField()[0][0].equals(AIFigure) || game.getGameField()[0][0].equals(game.getUserFigure()))){
+            return true;
+        } else if(game.getGameField()[0][2].equals(game.getGameField()[1][1]) && game.getGameField()[0][2].equals(game.getGameField()[2][0]) && (game.getGameField()[0][2].equals(AIFigure) || game.getGameField()[0][2].equals(game.getUserFigure()))){
+            return true;
+        } else if(game.getGameField()[0][0].equals(game.getGameField()[1][0]) && game.getGameField()[0][0].equals(game.getGameField()[2][0]) && (game.getGameField()[0][0].equals(AIFigure) || game.getGameField()[0][0].equals(game.getUserFigure()))){
+            return true;
+        } else if(game.getGameField()[0][2].equals(game.getGameField()[1][2]) && game.getGameField()[0][2].equals(game.getGameField()[2][2]) && (game.getGameField()[0][2].equals(AIFigure) || game.getGameField()[0][2].equals(game.getUserFigure()))){
+            return true;
+        } else if(game.getGameField()[0][0].equals(game.getGameField()[0][1]) && game.getGameField()[0][0].equals(game.getGameField()[0][2]) && (game.getGameField()[0][0].equals(AIFigure) || game.getGameField()[0][0].equals(game.getUserFigure()))){
+            return true;
+        } else if(game.getGameField()[1][0].equals(game.getGameField()[1][1]) && game.getGameField()[1][0].equals(game.getGameField()[1][2]) && (game.getGameField()[1][0].equals(AIFigure) || game.getGameField()[1][0].equals(game.getUserFigure()))){
+            return true;
+        } else if(game.getGameField()[0][1].equals(game.getGameField()[1][1]) && game.getGameField()[0][1].equals(game.getGameField()[2][1]) && (game.getGameField()[0][1].equals(AIFigure) || game.getGameField()[0][1].equals(game.getUserFigure()))){
+            return true;
+        } else if(game.getGameField()[2][0].equals(game.getGameField()[2][1]) && game.getGameField()[2][0].equals(game.getGameField()[2][2]) && (game.getGameField()[2][0].equals(AIFigure) || game.getGameField()[2][0].equals(game.getUserFigure()))) {
+            return true;
+        }
         return false;
     }
 

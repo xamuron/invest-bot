@@ -59,8 +59,8 @@ public class SimpleInvestBot extends TelegramLongPollingBot {
             } else
                 if (update.hasCallbackQuery()) {
                     String callbackId = update.getCallbackQuery().getId();
-                    String msg1 = "The right choice, grats!";
-                    String msg2 = "It's wrong button, sorry!";
+                    String msg1 = "wow, this is button1";
+                    String msg2 = "wow, this is button2";
 
                     String clb = update.getCallbackQuery().getData();
                     if (clb.equals("button_1"))
@@ -91,9 +91,17 @@ public class SimpleInvestBot extends TelegramLongPollingBot {
     private InlineKeyboardMarkup setInlineDefaultKeyboard() {
         List<List<InlineKeyboardButton>> buttons = new ArrayList<>();
         List<InlineKeyboardButton> buttons1 = new ArrayList<>();
+        List<InlineKeyboardButton> buttons2 = new ArrayList<>();
+        List<InlineKeyboardButton> buttons3 = new ArrayList<>();
         buttons1.add(new InlineKeyboardButton().setText("Button1").setCallbackData("button_1"));
         buttons1.add(new InlineKeyboardButton().setText("Button2").setCallbackData("button_2"));
+        buttons2.add(new InlineKeyboardButton().setText("Button3").setCallbackData("button_3"));
+        buttons2.add(new InlineKeyboardButton().setText("Button4").setCallbackData("button_4"));
+        buttons2.add(new InlineKeyboardButton().setText("Button4").setCallbackData("button_4"));
+        buttons3.add(new InlineKeyboardButton().setText("Button5").setCallbackData("button_5"));
         buttons.add(buttons1);
+        buttons.add(buttons2);
+        buttons.add(buttons3);
 
         InlineKeyboardMarkup markupKeyboard = new InlineKeyboardMarkup();
         markupKeyboard.setKeyboard(buttons);
