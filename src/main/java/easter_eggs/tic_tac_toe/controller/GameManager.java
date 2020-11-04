@@ -1,7 +1,6 @@
 package easter_eggs.tic_tac_toe.controller;
 
 import easter_eggs.tic_tac_toe.model.TicTacToeGame;
-import easter_eggs.tic_tac_toe.view.GameView;
 
 import java.util.Scanner;
 
@@ -23,7 +22,7 @@ public class GameManager {
 
     public GameManager(TicTacToeGame game) {
         this.level = "easy";
-        if (game.getUserFigure().equalsIgnoreCase("x")) {
+        if (game.getUserFigure().equalsIgnoreCase("X")) {
             AIFigure = "0";
             AITurn = false;
         }
@@ -41,7 +40,8 @@ public class GameManager {
 
         while (!winCondition()) {
             doTurn();
-            GameView.printGameView(this);
+//            GameView.printGameView(this);
+            printGameView();
         }
 
         in.close();
@@ -67,14 +67,46 @@ public class GameManager {
             }
         }
         else {
-            System.out.print("Input a number: \n");
-            int numi = in.nextInt();
-            int numj = in.nextInt();
-            game.setFigureOnField(game.getUserFigure(), numi, numj);
+            doUserTurnByConsole();
         }
 
         AITurn = !AITurn;
         game.increaseTurnNumber();
+    }
+
+    public void doTurn (int userI, int userJ) {
+        boolean turnIsDone = false;
+
+        if (AITurn) {
+            for (int i = 0; i < 3; i++) {
+                if (turnIsDone)
+                    break;
+                for (int j = 0; j < 3; j++) {
+                    if (game.getGameField()[i][j].isEmpty()) {
+                        game.setFigureOnField(AIFigure, i, j);
+                        turnIsDone = true;
+                        break;
+                    }
+                }
+            }
+        }
+        else {
+            doUserTurn(userI, userJ);
+        }
+
+        AITurn = !AITurn;
+        game.increaseTurnNumber();
+    }
+
+    public void doUserTurnByConsole() {
+        System.out.print("Input a number: \n");
+        int numi = in.nextInt();
+        int numj = in.nextInt();
+        game.setFigureOnField(game.getUserFigure(), numi, numj);
+    }
+
+    public void doUserTurn(int i, int j) {
+        game.setFigureOnField(game.getUserFigure(), i, j);
     }
 
     public boolean winCondition() {
@@ -104,5 +136,53 @@ public class GameManager {
             return "AI";
         else
             return game.getUserName();
+    }
+
+    public void printGameView() {
+        System.out.println("Turn number: " + getGame().getTurn());
+
+        String currentUser = isAITurn() ? getGame().getUserName() : "AI";
+        System.out.println(currentUser + "'s turn: ");
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                String figure = getGame().getGameField()[i][j];
+                if (!figure.isEmpty())
+                    stringBuilder.append(" " + figure + " ");
+                else
+                    stringBuilder.append("   ");
+                if (j != 2)
+                    stringBuilder.append("|");
+                if (j == 2)
+                    stringBuilder.append("\n");
+            }
+        }
+        System.out.println(stringBuilder.toString());
+        System.out.println("***************");
+    }
+
+    public String getGameView() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Turn number: " + getGame().getTurn());
+        stringBuilder.append("\n");
+
+        String currentUser = isAITurn() ? getGame().getUserName() : "AI";
+        stringBuilder.append(currentUser + "'s turn:\n");
+
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                String figure = getGame().getGameField()[i][j];
+                if (!figure.isEmpty())
+                    stringBuilder.append(" " + figure + " ");
+                else
+                    stringBuilder.append("     ");
+                if (j != 2)
+                    stringBuilder.append("|");
+                if (j == 2)
+                    stringBuilder.append("\n");
+            }
+        }
+        return stringBuilder.toString();
     }
 }
